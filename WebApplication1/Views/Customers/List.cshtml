@@ -1,0 +1,52 @@
+﻿@model WebApplication1.ViewModels.CustomersViewModel
+@{
+    ViewData["Title"] = "Customers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/lib/DataTables/datatables.css" rel="stylesheet" />
+
+<h1>Customers</h1>
+
+<table class ="table" id="customers">
+    <thead>
+        <tr> 
+            <th>Customer Name</th>
+            <th>Membership type</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+
+@section scripts
+{
+    @*jquery импортируется до datatables*@
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/DataTables/datatables.js"></script>   
+    <script>
+        @*Когда страница полностью отрендерена *@
+        $(document).ready(function() {
+            @*чтобы функция dataTable() работала, необходимы теги thead и tbody*@
+            var table = $("#customers").dataTable({
+                ajax: {
+                    url: "/api/Customers/",
+                    dataSrc: ""
+                },
+                columns : 
+                [
+                    {
+                        data:  "name",
+                            render : function (data, type, row) { return "<a href='/Customers/Details/" + row.id + "'>" + row.name + "</a>" }
+                    },
+                    {
+                        data:  "memberShipType",
+                        render : function (data, type, row) { return row.memberShipType.name }
+                    }
+                ]
+            });
+        })
+        </script>
+}
+
+

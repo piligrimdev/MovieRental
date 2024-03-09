@@ -1,0 +1,102 @@
+﻿
+@{
+    ViewData["Title"] = "Rental";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1> New Rental</h1>
+
+<form id="form">
+        <div class ="form-group">
+            <label>Customer</label>
+            <input id="customers" type="text" class="typeahead form-control" />
+        </div>
+
+        <div class ="form-group">
+            <label>Movie</label>
+            <input id="movies" type="text" class="typeahead form-control" />
+        </div>
+
+        <ul id="movies-list" class="list-group">
+
+        </ul>
+
+        <div class ="form-group">
+            <button class="btn btn-primary">Submit</button>
+        </div>
+</form>
+
+<link href="~/lib/typeahead.css" rel="stylesheet" />
+<link href="~/lib/Toastr/toastr.css" rel="stylesheet" />
+@section Scripts
+{
+    <script src="~/lib/Toastr/toastr.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="https://twitter.github.io/typeahead.js/releases/latest/typeahead.bundle.js"></script>
+    <script>
+    $(document).ready(function(){
+            var model = {
+                customerId: 0,
+                moviesIds: []
+            };
+            var customers = new Bloodhound({
+                    datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                    queryTokenizer: Bloodhound.tokenizers.whitespace,
+                    remote: {
+                        url: '/api/Customers?query=%QUERY',
+                        wildcard: '%QUERY'
+                    }
+                });
+
+                $('#customers').typeahead({
+                    minLength: 3,
+                    highlight: true
+                }, {
+                    name: 'customers',
+                    display: 'name',
+                    source: customers
+                    }).on("typeahead:select", function(e, customer){
+                            model.customerId = customer.id;
+                    });
+
+                var movies = new Bloodhound({
+                        datumTokenizer: Bloodhound.tokenizers.obj.whitespace('name'),
+                        queryTokenizer: Bloodhound.tokenizers.whitespace,
+                        remote: {
+                            url: '/api/Movies?query=%QUERY',
+                            wildcard: '%QUERY'
+                        }
+                    })
+
+                $('#movies').typeahead({
+                    minLength: 3,
+                    highlight: true
+                }, {
+                    name: 'movies',
+                    display: 'name',
+                    source: movies
+                }).on("typeahead:select", function(e, movie){
+                        $("#movies-list").append( "<li class='list-group-item'>" + movie.name + "</p>" );
+                        $("#movies").typeahead("val", ""); @*пустая строка после выбора *@
+                        model.moviesIds.push(movie.id);
+                });
+
+                $("#form").submit(function(e){
+                    e.preventDefault(); @*чтобы не срабатывало обычное действие формы*@
+                    $.ajax({
+                        url: "/api/Rental/",
+                        contentType: "application/json",
+                        method: "post",
+                        data: JSON.stringify(model),
+                        success: function(res) {
+                            toastr.info("All good");
+                        },
+                        error: function(err){
+                            toastr.info("Error occured");
+                        }
+                    })
+                });
+    });
+    </script>
+}
+

@@ -1,0 +1,64 @@
+﻿@model WebApplication1.ViewModels.MovieEditViewModel
+@{
+    ViewData["Title"] = "Edit Movie";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (Model.Movie == null)
+{
+        <h1>New movie</h1>
+}
+else
+{
+        <h1>Edit movie</h1>
+}
+@*using Используется для того, чтобы блок формы закрылся после блока кода(т.е. после {}) *@
+@using (Html.BeginForm("Save", "Movies"))
+{
+    <p>@Html.ValidationSummary(true, "Please, fill data correctly")</p>
+        <div class ="form-group">
+            @Html.LabelFor(m => m.Movie.Name)
+            @Html.TextBoxFor(m => m.Movie.Name, new {@class = "form-control"})
+            @Html.ValidationMessageFor(m => m.Movie.Name)
+        </div>
+
+        <div class ="form-group">
+            @Html.LabelFor(m => m.Movie.ReleaseDate)
+            @Html.TextBoxFor(m => m.Movie.ReleaseDate, new {@class = "form-control date"})
+            @Html.ValidationMessageFor(m => m.Movie.ReleaseDate)
+        </div>
+
+
+        <div class ="form-group">
+            @Html.LabelFor(m => m.Movie.Score)
+            @Html.TextBoxFor(m => m.Movie.Score, new {@class = "form-control number"})
+            @Html.ValidationMessageFor(m => m.Movie.Score)
+        </div>
+
+
+        <div class ="form-group">
+            @Html.LabelFor(m => m.Movie.Stock)
+            @Html.TextBoxFor(m => m.Movie.Stock, new {@class = "form-control number"})
+            @Html.ValidationMessageFor(m => m.Movie.Stock)
+        </div>
+
+
+       <div class ="form-group">
+            @Html.DropDownListFor(m => m.Movie.MovieGenreId, new SelectList(Model.Genres, "Id","GenreName"), "Select genre", new { @class =	"form-control" })
+       </div>
+
+       <div class ="form-group">
+            @Html.LabelFor(m => m.Movie.Description)
+            @Html.TextAreaFor(m => m.Movie.Description, new {@class = "form-control"})
+            @Html.ValidationMessageFor(m => m.Movie.Description)
+       </div>
+    @*HidderFor чтобы поле id не было null*@
+    @Html.HiddenFor(m => m.Movie.Id)
+    @Html.AntiForgeryToken()
+    <button class ="btn btn-primary">Save</button>
+}
+
+@*Валидация на стороне клиента*@
+@section Scripts{
+            <partial name="_ValidationScriptsPartial" />
+}

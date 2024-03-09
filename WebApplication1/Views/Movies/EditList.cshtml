@@ -1,0 +1,85 @@
+﻿@model WebApplication1.ViewModels.MoviesViewModel
+@{
+    ViewData["Title"] = "Movies";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/lib/DataTables/datatables.css" rel="stylesheet" />
+
+<h1>Movies</h1>
+
+@Html.ActionLink("New movie", "Edit", new { id=0 }, new {@class = "btn btn-primary"})
+
+<table class="table" id="movies">
+    <thead>
+        <tr> 
+            <th>Movie</th>
+            <th>Genre</th>
+            <th>Score</th>
+            <th>Stock</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+    
+@section scripts
+    {
+    @*jquery импортируется до datatables*@
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/DataTables/datatables.js"></script>   
+        <script>
+        @*Когда страница полностью отрендерена *@
+            $(document).ready(function() {
+        @*чтобы функция dataTable() работала, необходимы теги thead и tbody*@
+                var table = $("#movies").dataTable({
+                    ajax: {
+                        url: "/api/Movies/",
+                        dataSrc: ""
+                    },
+                    columns : 
+                    [
+                        {
+                            data:  "name",
+                            render : function (data, type, row) { return "<a href='/Movies/Edit/" + row.id + "'>" + row.name + "</a>" }
+                        },
+                        {
+                            data:  "movieGenre.genreName"
+                        },
+                        {
+                            data:  "score",
+                            render : function (data, type, row) { return row.score }
+                        },
+                        {
+                            data:  "stock",
+                            render : function (data, type, row) { return row.stock }
+                        },
+                        {
+                            data: "delete",
+                            render : function (data, type, row) 
+                                { return '<button type="button" class="btn-link" id="del" movie-id="' + row.id + '">Delete</button>' }
+                        }
+                    ]
+                });
+
+               $("#movies").on("click", "#del", function()
+               {
+                   var btn = $(this);
+
+                   if(confirm("Are you sure you want to delete this bitch?"))
+                   {
+                       $.ajax({
+                           url: "/api/Movies/" + btn.attr("movie-id"),
+                           method: "DELETE",
+                           success: function()
+                           {
+                                    console.log("wtf");
+                                    table.api().row(btn.parents("tr"))
+                                    .remove()
+                                    .draw();
+                           }
+                       });
+                   }
+               });
+            })
+            </script>
+}

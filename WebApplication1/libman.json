@@ -1,0 +1,10 @@
+{
+  "version": "1.0",
+  "defaultProvider": "unpkg",
+  "libraries": [
+    {
+      "library": "typeahead@0.2.2",
+      "destination": "wwwroot/lib/typeahead/"
+    }
+  ]
+}

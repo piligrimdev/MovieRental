@@ -1,0 +1,57 @@
+﻿@model WebApplication1.ViewModels.MoviesViewModel
+@{
+    ViewData["Title"] = "Movies";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/lib/DataTables/datatables.css" rel="stylesheet" />
+
+<h1>Movies</h1>
+
+<table class="table" id="movies">
+    <thead>
+        <tr> 
+            <th>Movie</th>
+            <th>Genre</th>
+            <th>Score</th>
+            <th>Stock</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+    
+@section scripts
+    {
+    @*jquery импортируется до datatables*@
+        <script src="~/lib/jquery/dist/jquery.js"></script>
+        <script src="~/lib/DataTables/datatables.js"></script>   
+        <script>
+        @*Когда страница полностью отрендерена *@
+            $(document).ready(function() {
+        @*чтобы функция dataTable() работала, необходимы теги thead и tbody*@
+                var table = $("#movies").dataTable({
+                    ajax: {
+                        url: "/api/Movies/",
+                        dataSrc: ""
+                    },
+                    columns : 
+                    [
+                        {
+                            data:  "name",
+                            render : function (data, type, row) { return "<a href='/Movies/Details/" + row.id + "'>" + row.name + "</a>" }
+                        },
+                        {
+                            data:  "movieGenre.genreName"
+                        },
+                        {
+                            data:  "score",
+                            render : function (data, type, row) { return row.score }
+                        },
+                        {
+                            data:  "stock",
+                            render : function (data, type, row) { return row.stock }
+                        }
+                    ]
+                });
+            })
+            </script>
+}
