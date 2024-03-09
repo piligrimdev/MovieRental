@@ -1,1 +1,2 @@
-# WebApplication1
+# MovieRental
+Учебный проект. Использованны EF, ASP.NET Identity. 
